@@ -6,5 +6,6 @@
 #verificam daca ne da eroare la merge
 
 #Verificam daca exista fisierul pe care l-am mentionat ca argument
-
+#linie de test 1
+#linie de test 2
 #Verificam permisiunile si proprietarul fisierului
