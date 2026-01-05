@@ -24,8 +24,40 @@ PERMS=$(stat -c "%a" "$FILE")
 OWNER=$(stat -c "%U" "$FILE")
 echo "Proprietarul fisierului $FILE este $OWNER."
 OTHERS=$(( $PERMS % 10 ))
+
 if [ "$OTHERS" -ne 2 ] && [ "$OTHERS" -ne 3 ] && [ "$OTHERS" -ne 6 ] && [ "$OTHERS" -ne 7 ]; then
 	echo "Fisierul are permisiuni sigure ($PERMS in baza 8)."
 else
 	echo "Eroare! Permisiuni nesigure! ($PERMS in baza 8) Fisierul poate fi modificat de alte persoane in afara de $OWNER."
+fi
+
+#Verificare duplicate sau directive suprascrise
+
+declare -A DICTIONAR
+
+NR_LINII=0
+DUPLICATE=0
+while IFS= read -r LINIE || [ -n "$LINIE" ]; do
+	((NR_LINII++))
+	LINIE=$(echo "$LINIE" | xargs)
+	if [[ "$LINIE" == \#* || -z "$LINIE" ]]; then
+		continue
+	fi
+	if [[ "$LINIE" == *"="* ]]; then
+		KEY=$(echo "$LINIE" | cut -d'=' -f1 | xargs)
+		VAL=$(echo "$LINIE" | cut -d'=' -f2 | xargs)
+		if [[ -v DICTIONAR["$KEY"] ]]; then
+			echo -e "Atentie! Duplicat pe linia $NR_LINII pentru permisiunea $KEY!\nValoarea initiala - ${DICTIONAR[$KEY]} - Va fi inlocuita cu $VAL."
+			((DUPLICATE++))
+		fi
+	DICTIONAR["$KEY"]="$VAL"
+	fi
+done < "$FILE"
+
+if [ "$DUPLICATE" -eq 0 ]; then
+	echo "Nu au fost gasite duplicate." 
+elif [ "$DUPLICATE" -eq 1 ]; then
+	echo "In fisierul $FILE exista o singura duplicata."
+else
+	echo "In fisierul $FILE exista $DUPLICATE duplicate."
 fi
