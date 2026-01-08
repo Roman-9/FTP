@@ -61,3 +61,28 @@ elif [ "$DUPLICATE" -eq 1 ]; then
 else
 	echo "In fisierul $FILE exista $DUPLICATE duplicate."
 fi
+
+
+#Verificare setari critice de securitate
+
+verificare(){
+	local KEY=$1
+	local VAL_RECOMANDAT=$2
+	local VAL="${DICTIONAR[$KEY]}"
+
+	if [ -z "$VAL" ]; then
+		echo "Atentie! Permisiunea $KEY nu a fost configurata! Valoare recomandata: $VAL_RECOMANDAT"
+		return
+	fi
+
+	if [ "$VAL" == "$VAL_RECOMANDAT" ]; then
+		echo "Valoarea setarii $KEY a fost configurata sigur."
+	else
+		echo "Atentie! Valoarea setarii $KEY NU a fost configurata sigur. Valoarea recomandata: $VAL_RECOMANDAT"
+	fi
+}
+
+verificare "anonymous_enable" "NO"
+verificare "local_enable" "YES"
+verificare "write_enable" "YES"
+verificare "chroot_local_user" "YES"
