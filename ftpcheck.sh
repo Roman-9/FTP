@@ -61,10 +61,10 @@ NR_LINII=0
 DUPLICATE=0
 while IFS= read -r LINIE || [ -n "$LINIE" ]; do
 	((NR_LINII++))
-	LINIE=$(echo "$LINIE" | xargs)
 	if [[ "$LINIE" == \#* || -z "$LINIE" ]]; then
 		continue
 	fi
+	LINIE=$(echo "$LINIE" | xargs)
 	if [[ "$LINIE" == *"="* ]]; then
 		KEY=$(echo "$LINIE" | cut -d'=' -f1 | xargs)
 		VAL=$(echo "$LINIE" | cut -d'=' -f2 | xargs)
